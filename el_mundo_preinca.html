@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El mundo preinca</title>
+<style>
+:root{--navy:#082b49;--blue:#0d4c7c;--gold:#ffd166;--cream:#fff5df;--green:#28b879}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;color:#fff;background:linear-gradient(135deg,#0878a8,#63c5d8 50%,#e5b65c);min-height:100vh}
+header{max-width:1250px;margin:22px auto 14px;padding:22px 28px;background:var(--cream);color:#38230e;border:5px solid #b77d35;border-radius:22px;box-shadow:0 8px 0 #754b22;text-align:center}
+h1{margin:0;font-size:clamp(2rem,5vw,4rem);letter-spacing:1px}
+header p{margin:6px 0 0;font-weight:600}
+.layout{max-width:1250px;margin:0 auto 30px;padding:0 16px;display:grid;grid-template-columns:230px minmax(300px,1fr) 260px;gap:16px}
+.panel{background:rgba(5,35,62,.96);border:1px solid #6ba2c7;border-radius:18px;padding:18px;box-shadow:0 8px 24px #08304b55}
+.score{font-size:2.2rem;color:var(--gold);font-weight:800}
+.small{font-size:.9rem;color:#cde5f5}
+.cultures h2,.fact h2{font-size:1.15rem;margin:0 0 12px}
+.culture{padding:10px 12px;margin:6px 0;border-radius:10px;background:#123f64;color:#e5f3ff}
+.culture.active{background:var(--gold);color:#38230e;font-weight:800}
+.game{padding:26px}
+.kicker{color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:.82rem}
+.question{font-size:clamp(1.3rem,2.5vw,2rem);line-height:1.25;margin:10px 0 22px}
+.answers{display:grid;gap:11px}
+.answer{width:100%;text-align:left;padding:15px;border-radius:13px;border:2px solid #4b83a9;background:#103b5f;color:white;font-size:1rem;cursor:pointer;transition:.15s}
+.answer:hover:not(:disabled){border-color:var(--gold);transform:translateY(-1px)}
+.answer.selected{border-color:var(--gold);background:#185b88}
+.answer.correct{border-color:#5ce0a1;background:#12583f}
+.answer.wrong{border-color:#ff8c8c;background:#682f39}
+.answer:disabled{cursor:default}
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+button.primary{border:0;border-radius:12px;padding:13px 20px;background:var(--green);color:#052d24;font-size:1rem;font-weight:800;cursor:pointer}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{border:1px solid #85b4d2;border-radius:12px;padding:12px 16px;background:transparent;color:#fff;cursor:pointer}
+.progress{height:9px;background:#335a78;border-radius:20px;overflow:hidden;margin:12px 0 18px}
+.progress span{height:100%;display:block;background:var(--gold);width:0;transition:width .25s}
+.feedback{display:none;margin-top:18px;padding:14px;border-radius:12px;background:#123f5b;line-height:1.5}
+.feedback.show{display:block}
+.fact{line-height:1.55}
+.art{font-size:3rem;text-align:center;margin:8px 0}
+footer{text-align:center;padding:0 16px 24px;color:#103754;font-weight:700}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.cultures{order:2}.fact{order:3}.game{order:1}header{margin:14px 12px}.layout{padding:0 12px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏺 El mundo preinca</h1>
+  <p>Conoce, aprende y descubre las culturas que formaron el Ecuador antes de los incas.</p>
+</header>
+<main class="layout">
+  <aside class="panel">
+    <div>🏆 Puntuación</div><div class="score" id="score">0</div>
+    <div class="small">Responde correctamente para sumar 10 puntos.</div>
+    <hr style="border-color:#315675;margin:18px 0">
+    <section class="cultures">
+      <h2>Culturas del Ecuador</h2>
+      <div class="culture active">🏺 Valdivia</div>
+      <div class="culture">Machalilla</div><div class="culture">Chorrera</div>
+      <div class="culture">La Tolita</div><div class="culture">Bahía</div>
+      <div class="culture">Jama-Coaque</div><div class="culture">Guangala</div>
+      <div class="culture">Manteña</div><div class="culture">Cañari</div>
+      <div class="culture">Milagro-Quevedo</div>
+    </section>
+  </aside>
+  <section class="panel game">
+    <div class="kicker" id="level">Nivel fácil</div>
+    <div style="display:flex;justify-content:space-between;gap:10px"><strong id="counter">Pregunta 1 de 10</strong><span id="percent" class="small">10%</span></div>
+    <div class="progress"><span id="bar"></span></div>
+    <div class="question" id="question">¿Por qué es conocida la cultura Valdivia?</div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="actions">
+      <button class="primary" id="check" disabled>Comprobar respuesta</button>
+      <button class="primary" id="next" hidden>Siguiente pregunta →</button>
+    </div>
+  </section>
+  <aside class="panel fact">
+    <h2>💡 Dato interesante</h2>
+    <div class="art">🏺</div>
+    <p id="fact">La cultura Valdivia se desarrolló en la costa ecuatoriana y es conocida por su cerámica y sus figurillas de barro.</p>
+    <hr style="border-color:#315675;margin:18px 0">
+    <div class="small">Consejo: lee la explicación después de cada respuesta. ¡Así aprenderás mientras juegas!</div>
+  </aside>
+</main>
+<footer>Las culturas preincas dejaron un gran legado. ¡Conócelas y sigue avanzando!</footer>
+<script>
+const questions = [
+{culture:"Valdivia",level:"Fácil",q:"¿Por qué es conocida la cultura Valdivia?",a:["Por sus grandes pirámides de piedra","Por su cerámica y sus figurillas de barro","Por construir Machu Picchu","Por inventar la escritura alfabética"],c:1,info:"Valdivia se desarrolló en la costa ecuatoriana y es famosa por su cerámica y sus figurillas, incluidas las conocidas figurillas femeninas."},
+{culture:"Machalilla",level:"Fácil",q:"¿En qué región del actual Ecuador se desarrolló la cultura Machalilla?",a:["En la región amazónica","Principalmente en la costa","En las islas Galápagos","Exclusivamente en los Andes del sur"],c:1,info:"Machalilla fue una sociedad prehispánica de la costa ecuatoriana que destacó por su cerámica y sus prácticas funerarias."},
+{culture:"Chorrera",level:"Fácil",q:"¿Qué destacó especialmente en la cultura Chorrera?",a:["La cerámica elaborada y sus formas variadas","Los castillos medievales","Las monedas de oro acuñadas","Los libros impresos"],c:0,info:"La cerámica Chorrera incluyó recipientes de formas diversas y botellas silbato, algunas capaces de producir sonidos."},
+{culture:"La Tolita",level:"Medio",q:"¿Por qué es reconocida la cultura La Tolita?",a:["Por construir ferrocarriles","Por su trabajo artístico con metales, incluido el platino","Por utilizar máquinas de vapor","Por fundar ciudades romanas"],c:1,info:"La Tolita, en la costa norte, destacó por su orfebrería y el trabajo de metales como el oro y el platino."},
+{culture:"Jama-Coaque",level:"Medio",q:"¿Qué podemos conocer gracias a muchas figurillas Jama-Coaque?",a:["Su vestimenta, adornos y personajes sociales","La vida en la antigua Roma","La construcción de aviones","La escritura moderna"],c:0,info:"Sus figurillas muestran personajes con tocados, adornos y vestimentas que ayudan a estudiar aspectos de su sociedad."},
+{culture:"Bahía",level:"Medio",q:"¿En qué zona se desarrolló principalmente la cultura Bahía?",a:["En la costa central de Ecuador","En el norte de Europa","En el desierto del Sahara","En el centro de México"],c:0,info:"La cultura Bahía se desarrolló en la costa central ecuatoriana, especialmente en zonas de la actual provincia de Manabí."},
+{culture:"Guangala",level:"Medio",q:"¿Qué actividades fueron importantes para las sociedades Guangala?",a:["La agricultura, la pesca y la elaboración de cerámica","La fabricación de computadoras","El comercio de automóviles","La navegación con barcos de vapor"],c:0,info:"Guangala se desarrolló en la costa ecuatoriana y combinó actividades agrícolas y pesqueras con una destacada producción artesanal."},
+{culture:"Manteña",level:"Difícil",q:"¿Qué actividad comercial destacó entre los manteños?",a:["El comercio marítimo y el intercambio de productos","El comercio aéreo","La exportación de teléfonos","El comercio con la antigua Grecia mediante trenes"],c:0,info:"Los manteños desarrollaron redes de intercambio marítimo en la costa del actual Ecuador y utilizaron embarcaciones para comerciar."},
+{culture:"Cañari",level:"Difícil",q:"¿En qué región vivieron principalmente los cañaris?",a:["En la región austral andina del actual Ecuador","En la costa norte de África","En las islas del Caribe","En el norte de Asia"],c:0,info:"Los cañaris habitaron principalmente zonas de las actuales provincias de Azuay y Cañar. Su historia incluye la época anterior y la expansión inca."},
+{culture:"Milagro-Quevedo",level:"Difícil",q:"¿Qué elemento arqueológico se asocia con la cultura Milagro-Quevedo?",a:["Las tolas y objetos de metal","Los anfiteatros romanos","Las catedrales góticas","Los molinos industriales modernos"],c:0,info:"Milagro-Quevedo se desarrolló en zonas de la costa interior. Se asocia con montículos artificiales llamados tolas y una importante metalurgia."}
+];
+let index=0,score=0,selected=null,checked=false;
+const $=id=>document.getElementById(id);
+function render(){
+ const q=questions[index];selected=null;checked=false;
+ $("level").textContent="Nivel "+q.level.toLowerCase();
+ $("counter").textContent=`Pregunta ${index+1} de ${questions.length}`;
+ $("percent").textContent=Math.round((index+1)/questions.length*100)+"%";
+ $("bar").style.width=((index+1)/questions.length*100)+"%";
+ $("question").textContent=q.q;$("fact").textContent="Responde para descubrir el dato histórico.";
+ $("feedback").className="feedback";$("feedback").textContent="";
+ $("answers").innerHTML="";
+ q.a.forEach((answer,i)=>{const b=document.createElement("button");b.className="answer";b.textContent=String.fromCharCode(65+i)+". "+answer;b.onclick=()=>{if(checked)return;selected=i;document.querySelectorAll(".answer").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");$("check").disabled=false};$("answers").appendChild(b)});
+ $("check").hidden=false;$("check").disabled=true;$("next").hidden=true;
+ document.querySelectorAll(".culture").forEach(el=>el.classList.toggle("active",el.textContent.trim().replace("🏺 ","")===q.culture));
+}
+$("check").onclick=()=>{
+ if(selected===null||checked)return;checked=true;const q=questions[index];const buttons=[...document.querySelectorAll(".answer")];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add("correct");else if(i===selected)b.classList.add("wrong")});
+ if(selected===q.c){score+=10;$("score").textContent=score}
+ $("feedback").className="feedback show";
+ $("feedback").innerHTML=`<strong>${selected===q.c?"¡Correcto! +10 puntos":"No exactamente, ¡sigue aprendiendo!"}</strong><br>${q.info}`;
+ $("fact").textContent=q.info;$("check").hidden=true;$("next").hidden=false;
+ $("next").textContent=index===questions.length-1?"Ver resultado final →":"Siguiente pregunta →";
+};
+function finish(){
+ index=questions.length;
+ const total=questions.length*10;
+ $("level").textContent="¡Misión completada!";
+ $("counter").textContent="Resultado final";
+ $("percent").textContent="100%";$("bar").style.width="100%";
+ $("question").textContent=`¡Conseguiste ${score} de ${total} puntos!`;
+ $("answers").innerHTML=`<div class="answer" style="cursor:default">${score===100?"¡Excelente! Eres un gran explorador de las culturas preincas.":score>=70?"¡Muy buen trabajo! Has aprendido bastante.":score>=40?"¡Vas por buen camino! Sigue descubriendo la historia.":"¡Toda aventura comienza aprendiendo! Inténtalo otra vez."}</div>`;
+ $("feedback").className="feedback show";$("feedback").textContent="¡Gracias por jugar El mundo preinca!";
+ $("check").hidden=true;$("next").textContent="↻ Jugar de nuevo";$("next").hidden=false;
+}
+$("next").onclick=()=>{
+ if(index<questions.length-1){index++;render()}else if(index===questions.length-1){finish()}else{index=0;score=0;$("score").textContent="0";render()}
+};
+render();
+</script>
+</body>
+</html>
